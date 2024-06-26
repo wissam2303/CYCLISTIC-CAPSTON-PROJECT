@@ -617,8 +617,307 @@ ORDER BY
    GROUP by start_station_name, end_station_name 
    ORDER by frequency ASC LIMIT 2;
               
+ --Analyse phase 2
+--1- counting the casual riders (643,125)
+with cte_bike_rides as (
+SELECT 
+ride_id,rideable_type,start_station_name, end_station_name, round(start_lat,2)as start_lat_rounded,round(start_lng,2) as start_lng_rounded,round(end_lat,2) as end_lat_rounded, round(end_lng,2) as end_lng_rounded, member_casual AS member_type,started_at, ended_at, (ended_at - started_at) as ride_length,
+CASE 
+   WHEN EXTRACT (day FROM started_at) = 1 THEN 'SUN'
+    WHEN EXTRACT (day FROM started_at) = 2 THEN 'MON'
+    WHEN EXTRACT ( day FROM started_at) = 3 THEN 'TUE'
+    WHEN EXTRACT ( day FROM started_at) = 4 THEN 'WED'
+    WHEN EXTRACT ( day FROM started_at) = 5 THEN 'THU'
+    WHEN EXTRACT ( day FROM started_at) = 6 THEN 'FRI'
+  ELSE 'SAT'
+  END AS day_of_week,
+   CASE
+    WHEN EXTRACT (MONTH FROM started_at) = 1 THEN 'JAN'
+    WHEN EXTRACT (MONTH FROM started_at) = 2 THEN 'FEB'
+    WHEN EXTRACT (MONTH FROM started_at) = 3 THEN 'MAR'
+    WHEN EXTRACT (MONTH FROM started_at) = 4 THEN 'APR'
+    WHEN EXTRACT (MONTH FROM started_at) = 5 THEN 'MAY'
+    WHEN EXTRACT (MONTH FROM started_at) = 6 THEN 'JUN'
+    WHEN EXTRACT (MONTH FROM started_at) = 7 THEN 'JUL'
+    WHEN EXTRACT (MONTH FROM started_at) = 8 THEN 'AGS'
+    WHEN EXTRACT (MONTH FROM started_at) = 9 THEN 'SEP'
+    WHEN EXTRACT (MONTH FROM started_at) = 10 THEN 'OCT'
+    WHEN EXTRACT (MONTH FROM started_at) = 11 THEN 'NOV'
+  ELSE 'DEC'
+  END AS MONTH,
+  EXTRACT('DOW' FROM started_at) As DOW,
+  EXTRACT (YEAR FROM started_at) AS year,
+  EXTRACT ( minute from started_at) AS minute,
+ EXTRACT (hour FROM started_at) as hour
+ FROM "Cyclistic".rides.rides r)
+ select count(member_type)
+ from cte_bike_rides
+ where member_type= 'casual';
+ 
+--2- counting the number of members with a membership (1,266,457)
+with cte_bike_rides as (
+SELECT 
+ride_id,rideable_type,start_station_name, end_station_name, round(start_lat,2)as start_lat_rounded,round(start_lng,2) as start_lng_rounded,round(end_lat,2) as end_lat_rounded, round(end_lng,2) as end_lng_rounded, member_casual AS member_type,started_at, ended_at, (ended_at - started_at) as ride_length,
+CASE 
+   WHEN EXTRACT (day FROM started_at) = 1 THEN 'SUN'
+    WHEN EXTRACT (day FROM started_at) = 2 THEN 'MON'
+    WHEN EXTRACT ( day FROM started_at) = 3 THEN 'TUE'
+    WHEN EXTRACT ( day FROM started_at) = 4 THEN 'WED'
+    WHEN EXTRACT ( day FROM started_at) = 5 THEN 'THU'
+    WHEN EXTRACT ( day FROM started_at) = 6 THEN 'FRI'
+  ELSE 'SAT'
+  END AS day_of_week,
+   CASE
+    WHEN EXTRACT (MONTH FROM started_at) = 1 THEN 'JAN'
+    WHEN EXTRACT (MONTH FROM started_at) = 2 THEN 'FEB'
+    WHEN EXTRACT (MONTH FROM started_at) = 3 THEN 'MAR'
+    WHEN EXTRACT (MONTH FROM started_at) = 4 THEN 'APR'
+    WHEN EXTRACT (MONTH FROM started_at) = 5 THEN 'MAY'
+    WHEN EXTRACT (MONTH FROM started_at) = 6 THEN 'JUN'
+    WHEN EXTRACT (MONTH FROM started_at) = 7 THEN 'JUL'
+    WHEN EXTRACT (MONTH FROM started_at) = 8 THEN 'AGS'
+    WHEN EXTRACT (MONTH FROM started_at) = 9 THEN 'SEP'
+    WHEN EXTRACT (MONTH FROM started_at) = 10 THEN 'OCT'
+    WHEN EXTRACT (MONTH FROM started_at) = 11 THEN 'NOV'
+  ELSE 'DEC'
+  END AS MONTH,
+  EXTRACT('DOW' FROM started_at) As DOW,
+  EXTRACT (YEAR FROM started_at) AS year,
+  EXTRACT ( minute from started_at) AS minute,
+ EXTRACT (hour FROM started_at) as hour
+ FROM "Cyclistic".rides.rides r)
+ select count(member_type)
+ from cte_bike_rides
+ where member_type= 'member';
+ 
+  -- minimum amount of time spent on a bike divided per group
+   --casual 23 mn and member 31 min
+
+with cte_bike_rides as (
+SELECT 
+ride_id,rideable_type,start_station_name, end_station_name, round(start_lat,2)as start_lat_rounded,round(start_lng,2) as start_lng_rounded,round(end_lat,2) as end_lat_rounded, round(end_lng,2) as end_lng_rounded, member_casual AS member_type,started_at, ended_at, (ended_at - started_at) as ride_length,
+CASE 
+   WHEN EXTRACT (day FROM started_at) = 1 THEN 'SUN'
+    WHEN EXTRACT (day FROM started_at) = 2 THEN 'MON'
+    WHEN EXTRACT ( day FROM started_at) = 3 THEN 'TUE'
+    WHEN EXTRACT ( day FROM started_at) = 4 THEN 'WED'
+    WHEN EXTRACT ( day FROM started_at) = 5 THEN 'THU'
+    WHEN EXTRACT ( day FROM started_at) = 6 THEN 'FRI'
+  ELSE 'SAT'
+  END AS day_of_week,
+   CASE
+    WHEN EXTRACT (MONTH FROM started_at) = 1 THEN 'JAN'
+    WHEN EXTRACT (MONTH FROM started_at) = 2 THEN 'FEB'
+    WHEN EXTRACT (MONTH FROM started_at) = 3 THEN 'MAR'
+    WHEN EXTRACT (MONTH FROM started_at) = 4 THEN 'APR'
+    WHEN EXTRACT (MONTH FROM started_at) = 5 THEN 'MAY'
+    WHEN EXTRACT (MONTH FROM started_at) = 6 THEN 'JUN'
+    WHEN EXTRACT (MONTH FROM started_at) = 7 THEN 'JUL'
+    WHEN EXTRACT (MONTH FROM started_at) = 8 THEN 'AGS'
+    WHEN EXTRACT (MONTH FROM started_at) = 9 THEN 'SEP'
+    WHEN EXTRACT (MONTH FROM started_at) = 10 THEN 'OCT'
+    WHEN EXTRACT (MONTH FROM started_at) = 11 THEN 'NOV'
+  ELSE 'DEC'
+  END AS MONTH,
+  EXTRACT('DOW' FROM started_at) As DOW,
+  EXTRACT (YEAR FROM started_at) AS year,
+  EXTRACT ( minute from started_at) AS minute,
+ EXTRACT (hour FROM started_at) as hour
+ FROM "Cyclistic".rides.rides r)
+ SELECT  min (ride_length) AS min_trip_time, member_type
+            FROM cte_bike_rides 
+            group by member_type;
+                  
+     -- maximum amount of time spent on a bike divided per group
+   --casual 36 days 4:31:01 and member 2 days 25:36 mn     
+   
+ SELECT  max (ride_length) AS min_trip_time, member_type
+            FROM bike_rides br 
+            group by member_type;
+  
            
-        
+--calculate the average of casual riders 15:11:16
+--AND members riders 14:31:57          
+with cte_bike_rides as (
+SELECT 
+ride_id,rideable_type,start_station_name, end_station_name, round(start_lat,2)as start_lat_rounded,round(start_lng,2) as start_lng_rounded,round(end_lat,2) as end_lat_rounded, round(end_lng,2) as end_lng_rounded, member_casual AS member_type,started_at, ended_at, (ended_at - started_at) as ride_length,
+CASE 
+   WHEN EXTRACT (day FROM started_at) = 1 THEN 'SUN'
+    WHEN EXTRACT (day FROM started_at) = 2 THEN 'MON'
+    WHEN EXTRACT ( day FROM started_at) = 3 THEN 'TUE'
+    WHEN EXTRACT ( day FROM started_at) = 4 THEN 'WED'
+    WHEN EXTRACT ( day FROM started_at) = 5 THEN 'THU'
+    WHEN EXTRACT ( day FROM started_at) = 6 THEN 'FRI'
+  ELSE 'SAT'
+  END AS day_of_week,
+   CASE
+    WHEN EXTRACT (MONTH FROM started_at) = 1 THEN 'JAN'
+    WHEN EXTRACT (MONTH FROM started_at) = 2 THEN 'FEB'
+    WHEN EXTRACT (MONTH FROM started_at) = 3 THEN 'MAR'
+    WHEN EXTRACT (MONTH FROM started_at) = 4 THEN 'APR'
+    WHEN EXTRACT (MONTH FROM started_at) = 5 THEN 'MAY'
+    WHEN EXTRACT (MONTH FROM started_at) = 6 THEN 'JUN'
+    WHEN EXTRACT (MONTH FROM started_at) = 7 THEN 'JUL'
+    WHEN EXTRACT (MONTH FROM started_at) = 8 THEN 'AGS'
+    WHEN EXTRACT (MONTH FROM started_at) = 9 THEN 'SEP'
+    WHEN EXTRACT (MONTH FROM started_at) = 10 THEN 'OCT'
+    WHEN EXTRACT (MONTH FROM started_at) = 11 THEN 'NOV'
+  ELSE 'DEC'
+  END AS MONTH,
+  EXTRACT('DOW' FROM started_at) As DOW,
+  EXTRACT (YEAR FROM started_at) AS year,
+  EXTRACT ( minute from started_at) AS minute,
+ EXTRACT (hour FROM started_at) as hour
+ FROM "Cyclistic".rides.rides r)
+ SELECT avg (ride_length )AS avg_trip_time, member_type
+            FROM cte_bike_rides 
+            group by member_type;
+            
+--  4) Trip time to calculate when the bike ride is mostly being used throughout the week (Monday — Sunday)
+           
+SELECT 
+ride_id,rideable_type,start_station_name, end_station_name, round(start_lat,2)as start_lat_rounded,round(start_lng,2) as start_lng_rounded,round(end_lat,2) as end_lat_rounded, round(end_lng,2) as end_lng_rounded, member_casual AS member_type,started_at, ended_at, (ended_at - started_at) as ride_length,
+CASE 
+   WHEN EXTRACT (day FROM started_at) = 1 THEN 'SUN'
+    WHEN EXTRACT (day FROM started_at) = 2 THEN 'MON'
+    WHEN EXTRACT ( day FROM started_at) = 3 THEN 'TUE'
+    WHEN EXTRACT ( day FROM started_at) = 4 THEN 'WED'
+    WHEN EXTRACT ( day FROM started_at) = 5 THEN 'THU'
+    WHEN EXTRACT ( day FROM started_at) = 6 THEN 'FRI'
+  ELSE 'SAT'
+  END AS day_of_week,
+   CASE
+    WHEN EXTRACT (MONTH FROM started_at) = 1 THEN 'JAN'
+    WHEN EXTRACT (MONTH FROM started_at) = 2 THEN 'FEB'
+    WHEN EXTRACT (MONTH FROM started_at) = 3 THEN 'MAR'
+    WHEN EXTRACT (MONTH FROM started_at) = 4 THEN 'APR'
+    WHEN EXTRACT (MONTH FROM started_at) = 5 THEN 'MAY'
+    WHEN EXTRACT (MONTH FROM started_at) = 6 THEN 'JUN'
+    WHEN EXTRACT (MONTH FROM started_at) = 7 THEN 'JUL'
+    WHEN EXTRACT (MONTH FROM started_at) = 8 THEN 'AGS'
+    WHEN EXTRACT (MONTH FROM started_at) = 9 THEN 'SEP'
+    WHEN EXTRACT (MONTH FROM started_at) = 10 THEN 'OCT'
+    WHEN EXTRACT (MONTH FROM started_at) = 11 THEN 'NOV'
+  ELSE 'DEC'
+  END AS MONTH,
+  EXTRACT('DOW' FROM started_at) As DOW,
+  EXTRACT (YEAR FROM started_at) AS year,
+  EXTRACT ( minute from started_at) AS minute,
+ EXTRACT (hour FROM started_at) as hour
+ FROM "Cyclistic".rides.rides r;
+          
+-- shows the least and most frequented start station name for casual riders
+            SELECT  count(*) AS rank, start_station_name 
+              FROM "Cyclistic".bikes.ride r
+             WHERE member_type = 'casual'
+             GROUP BY 
+            start_station_name
+            ORDER BY
+              rank desc;
+      
+      -- shows the least and most frequented start station name for members riders
+            SELECT count(*) AS rank, start_station_name
+              FROM "Cyclistic".bikes.ride r 
+            WHERE member_type = 'member'
+            GROUP BY 
+              start_station_name
+            ORDER BY
+              rank desc;
+             
+      -- shows least and most frequented end station name for members
+      
+            SELECT count(*) AS rank, end_station_name
+              FROM "Cyclistic".bikes.ride r 
+            WHERE member_type = 'member'
+            GROUP BY 
+              end_station_name
+            ORDER BY
+              rank desc;
+      
+      -- shows least and most frequented end station name for casual riders
+            SELECT count(*) AS rank, end_station_name
+              FROM "Cyclistic".bikes.ride r 
+             WHERE member_type = 'casual'
+             GROUP BY 
+              end_station_name
+            ORDER BY
+              rank desc;
+      
+      -- Checks the most popular routes
+            SELECT
+              COUNT(*) AS frequency,
+              end_station_name,
+              start_station_name
+            FROM
+              "Cyclistic".bikes.ride r 
+            GROUP BY
+              start_station_name,
+              end_station_name
+            ORDER BY
+              frequency DESC LIMIT 2;
+      
+      
+      
+      -- checks the most popular routes for casual riders
+            SELECT
+              COUNT(*) AS frequency,
+              end_station_name,
+              start_station_name
+            FROM
+              "Cyclistic".bikes.ride r       
+            WHERE
+              member_type = 'casual'
+            GROUP BY
+              start_station_name,
+              end_station_name
+            ORDER BY
+              frequency DESC LIMIT 2;
+      
+      -- checks the most popular routes for members
+            SELECT
+              COUNT(*) AS frequency,
+              end_station_name,
+              start_station_name
+            FROM
+              "Cyclistic".bikes.ride r 
+            WHERE
+              member_type = 'member'
+            GROUP BY
+              start_station_name,
+              end_station_name
+            ORDER BY
+              frequency DESC LIMIT 2;
+      
+      -- checks the least popular route for member
+            SELECT
+              COUNT(*) AS frequency,
+              end_station_name,
+              start_station_name
+            FROM
+              "Cyclistic".bikes.ride r          
+            WHERE
+              member_type = 'member'
+            GROUP BY
+              start_station_name,
+              end_station_name
+            ORDER BY
+              frequency ASC LIMIT 2;
+      
+      
+      -- checks the least popular route for casual riders
+            SELECT
+              COUNT(*) AS frequency,
+              end_station_name,
+              start_station_name
+            FROM
+             "Cyclistic".bikes.ride r        
+            WHERE
+              member_type = 'casual'
+            GROUP BY
+              start_station_name,
+              end_station_name
+            ORDER BY
+              frequency ASC LIMIT 2;        
 
 
 
